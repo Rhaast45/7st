@@ -620,18 +620,26 @@
         var foot = tree.footer;
         var hold = 1;
 
-        canvas.click(function(e) {
+        function handleHeartTrigger(e) {
+            var evt = (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0]) ? e.originalEvent.touches[0] : e;
             var offset = canvas.offset(), rect = canvas[0].getBoundingClientRect(), x, y;
-            x = (e.pageX - offset.left) * width / rect.width;
-            y = (e.pageY - offset.top) * height / rect.height;
-            if (seed.hover(x, y)) {
-                hold = 0; 
-                canvas.unbind("click");
-                canvas.unbind("mousemove");
-                canvas.removeClass('hand');
-                $("#cinema-tape-container").fadeIn(1500);
+            x = (evt.pageX - offset.left) * width / rect.width;
+            y = (evt.pageY - offset.top) * height / rect.height;
+            var seedX = width / 2 - 20;
+            var seedY = height / 2;
+            var dist = Math.hypot(x - seedX, y - seedY);
+            if (seed.hover(x, y) || dist < 90) {
+                if (hold) {
+                    hold = 0; 
+                    canvas.unbind("click touchstart");
+                    canvas.unbind("mousemove");
+                    canvas.removeClass('hand');
+                    $("#cinema-tape-container").fadeIn(1500);
+                }
             }
-        }).mousemove(function(e){
+        }
+
+        canvas.on("click touchstart", handleHeartTrigger).mousemove(function(e){
             var offset = canvas.offset(), rect = canvas[0].getBoundingClientRect(), x, y;
             x = (e.pageX - offset.left) * width / rect.width;
             y = (e.pageY - offset.top) * height / rect.height;
